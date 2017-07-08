@@ -1,0 +1,63 @@
+{
+  "name": "generator-minify-grunt",
+  "version": "1.0.1",
+  "description": "a grunt tool for minify web files",
+  "homepage": "https://github.com/Barton0403",
+  "author": {
+    "name": "LiChenghao",
+    "email": "lichenghao0403@gmail.com",
+    "url": "https://github.com/Barton0403"
+  },
+  "files": [
+    "generators"
+  ],
+  "main": "generators/index.js",
+  "keywords": [
+    "minify",
+    "grunt",
+    "tool",
+    "yeoman-generator"
+  ],
+  "devDependencies": {
+    "coveralls": "^2.12.0",
+    "eslint": "^3.18.0",
+    "eslint-config-xo-space": "^0.16.0",
+    "jest": "^19.0.2",
+    "jest-cli": "^19.0.1",
+    "mkdirp": "^0.5.1",
+    "nsp": "^2.6.3",
+    "rimraf": "^2.6.1",
+    "yeoman-assert": "^3.0.0",
+    "yeoman-test": "^1.6.0"
+  },
+  "dependencies": {
+    "yeoman-generator": "^1.0.0",
+    "chalk": "^1.1.3",
+    "yosay": "^2.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "scripts": {
+    "prepublish": "nsp check",
+    "pretest": "eslint . --fix",
+    "test": "jest"
+  },
+  "eslintConfig": {
+    "extends": "xo-space",
+    "env": {
+      "jest": true,
+      "node": true
+    },
+    "rules": {
+      "linebreak-style": [
+        "error",
+        "windows"
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Barton0403/generator-minify-grunt.git"
+  }
+}
