@@ -6,8 +6,8 @@ module.exports = (grunt) => {
                 configFile: '.eslintrc.js',
                 quiet: true
             },
-            before: ['js/*.js'],
-            after: ['dist/js/*.js']
+            before: ['static/js/**/*.js'],
+            after: ['build/js/**/*.js']
         },
 
         // css 处理
@@ -23,9 +23,9 @@ module.exports = (grunt) => {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: 'css',
-                    src: '*.css',
-                    dest: 'dist/temp/css/',
+                    cwd: 'build/static/css',
+                    src: '**/*.css',
+                    dest: 'build/static/css',
                     ext: '.css',
                     extDot: 'last'
                 }]
@@ -39,9 +39,9 @@ module.exports = (grunt) => {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: 'js',
-                    src: '*.js',
-                    dest: 'dist/temp/js/',
+                    cwd: 'build/static/js',
+                    src: '**/*.js',
+                    dest: 'build/static/js',
                     ext: '.js',
                     extDot: 'last'
                 }]
@@ -55,31 +55,46 @@ module.exports = (grunt) => {
                 length: 8
             },
             css: {
-                src: 'dist/temp/css/*.css',
-                dest: 'dist/css/'
+                files: [{
+                    src: 'static/css/*.css',
+                    dest: 'build/static/css/'
+                }]
             },
             js: {
-                src: 'dist/temp/js/*.js',
-                dest: 'dist/js/'
+                files: [{
+                    src: 'static/js/page/*.js',
+                    dest: 'build/static/js/page/'
+                }, {
+                    src: 'static/js/plugin/*.js',
+                    dest: 'build/static/js/plugin/'
+                }]
             },
             img: {
-                src: 'imgs/*.{jpg,jpeg,gif,png,webp}',
-                dest: 'dist/imgs/'
+                files: [{
+                    src: 'static/images/icon/*.{jpg,jpeg,gif,png,webp}',
+                    dest: 'build/static/images/icon/'
+                }]
+            },
+            font: {
+                files: [{
+                    src: 'static/font/*.{ttf,woff}',
+                    dest: 'build/static/font/'
+                }]
             }
         },
         // 替换原文件引用名称
         filerev_replace: {
             options: {
-              assets_root: 'dist/temp/'
+              assets_root: 'build/static/'
             },
             // compiled_assets: {
             //   src: 'dist/**/*.js'
             // },
             views: {
               options: {
-                views_root: 'dist/'
+                views_root: 'build'
               },
-              src: 'dist/**/*.{aspx,css,js}'
+              src: 'build/**/*.{html,php,aspx,css,js}'
             }
         },
 
@@ -97,7 +112,7 @@ module.exports = (grunt) => {
                     expand: true,
                     cwd: 'html',
                     src: '*.html',
-                    dest: 'dist/html/',
+                    dest: 'build/html/',
                     ext: '.html',
                     extDot: 'first'
                 }]
@@ -107,42 +122,53 @@ module.exports = (grunt) => {
                     expand: true,
                     cwd: 'aspnet',
                     src: '*.aspx',
-                    dest: 'dist/aspnet/',
+                    dest: 'build/aspnet/',
                     ext: '.aspx',
                     extDot: 'first'
-                }
+                }]
             },
             php: {
                 files: [{
                     expand: true,
                     cwd: 'php',
                     src: '*.php',
-                    dest: 'dist/php/',
+                    dest: 'build/php/',
                     ext: '.php',
                     extDot: 'first'
-                }
+                }]
             }
         },
 
         // 清除
         clean: {
-            css: ['dist/css/', 'dist/css/'],
-            js: ['dist/js/', 'dist/js/'],
-            aspnet: ['dist/aspnet/', 'dist/aspnet/'],
-            php: ['dist/php/', 'dist/php/'],
-            html: ['dist/html/', 'dist/html/'],
-            img: ['dist/imgs/', 'dist/imgs/'],
-            temp: ['dist/*.temp/']
+            css: ['build/static/css/'],
+            js: ['build/static/js/'],
+            html: ['build/html/'],
+            php: ['build/php/'],
+            aspnet: ['build/aspnet/'],
+            img: ['build/static/images/'],
+            temp: ['build/temp/'],
+            font: ['build/static/font/']
         }
+
+        copy: {
+            view: {
+                files: [
+                    // includes files within path and its sub-directories
+                    { expand: true, cwd: 'view/', src: ['**'], dest: 'build/html/' },
+                ],
+            },
+        },
     });
 
     require('load-grunt-tasks')(grunt);
 
-    grunt.registerTask('minify-css', ['clean:css', 'postcss', 'filerev:css']);
-    grunt.registerTask('minify-js', ['clean:js', 'eslint:before', 'uglify', 'filerev:js']);
+    grunt.registerTask('minify-css', ['clean:css', 'filerev:css', 'postcss']);
+    grunt.registerTask('minify-js', ['clean:js', 'eslint:before', 'filerev:js', 'uglify']);
     grunt.registerTask('minify-img', ['clean:img', 'filerev:img']);
     grunt.registerTask('minify-html', ['clean:html', 'htmlmin:html']);
     grunt.registerTask('minify-aspnet', ['clean:aspnet', 'htmlmin:aspnet']);
     grunt.registerTask('minify-php', ['clean:php', 'htmlmin:php']);
-    grunt.registerTask('default', ['minify-css', 'minify-js', 'minify-html', 'minify-aspnet', 'minify-php', 'minify-img', 'filerev_replace', 'clean:temp']);
+    grunt.registerTask('copy-view', ['clean:html', 'copy:view']);
+    grunt.registerTask('default', ['minify-css', 'minify-js', 'minify-img', 'minify-font', 'copy-view', 'filerev_replace', 'clean:temp']);
 };
